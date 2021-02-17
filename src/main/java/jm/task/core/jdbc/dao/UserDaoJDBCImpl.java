@@ -8,15 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    private final Connection connection;
-
     public UserDaoJDBCImpl() {
-        connection = Util.makeConnection();
     }
 
     public void createUsersTable() {
+        Connection connection = null;
+        Statement statement = null;
+
         try {
-            Statement statement = connection.createStatement();
+            connection = Util.makeConnection();
+            statement = connection.createStatement();
             connection.setAutoCommit(false);
             statement.execute("CREATE TABLE IF NOT EXISTS Users (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, " +
                     "name CHAR(30) NOT NULL, lastName CHAR(30), age TINYINT(3));");
@@ -28,12 +29,27 @@ public class UserDaoJDBCImpl implements UserDao {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void dropUsersTable() {
+        Connection connection = null;
+        Statement statement = null;
+
         try {
-            Statement statement = connection.createStatement();
+            connection = Util.makeConnection();
+            statement = connection.createStatement();
             connection.setAutoCommit(false);
             statement.execute("DROP TABLE IF EXISTS Users");
             connection.commit();
@@ -44,12 +60,27 @@ public class UserDaoJDBCImpl implements UserDao {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void saveUser(String name, String lastName, byte age) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
         try {
-            PreparedStatement statement = connection.prepareStatement
+            connection = Util.makeConnection();
+            statement = connection.prepareStatement
                     ("INSERT INTO users (name, lastName, age) values (?,?,?)");
             connection.setAutoCommit(false);
             statement.setString(1, name);
@@ -65,12 +96,27 @@ public class UserDaoJDBCImpl implements UserDao {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void removeUserById(long id) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
         try {
-            PreparedStatement statement = connection.prepareStatement
+            connection = Util.makeConnection();
+            statement = connection.prepareStatement
                     ("DELETE FROM users WHERE id = ?");
             connection.setAutoCommit(false);
             statement.setLong(1, id);
@@ -83,14 +129,29 @@ public class UserDaoJDBCImpl implements UserDao {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public List<User> getAllUsers() {
+        Connection connection = null;
+        Statement statement = null;
+
         List<User> list = new ArrayList<>();
 
         try {
-            Statement statement = connection.createStatement();
+            connection = Util.makeConnection();
+            statement = connection.createStatement();
             connection.setAutoCommit(false);
             ResultSet rs = statement.executeQuery("SELECT * FROM users");
             while (rs.next()) {
@@ -107,13 +168,28 @@ public class UserDaoJDBCImpl implements UserDao {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return list;
     }
 
     public void cleanUsersTable() {
+        Connection connection = null;
+        Statement statement = null;
+
         try {
-            Statement statement = connection.createStatement();
+            connection = Util.makeConnection();
+            statement = connection.createStatement();
             connection.setAutoCommit(false);
             statement.executeUpdate("DELETE FROM users");
             connection.commit();
@@ -123,6 +199,17 @@ public class UserDaoJDBCImpl implements UserDao {
                 connection.rollback();
             } catch (SQLException ex) {
                 ex.printStackTrace();
+            }
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }
